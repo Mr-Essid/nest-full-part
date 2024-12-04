@@ -35,6 +35,8 @@ export class UserService {
     return await this.userModel.findById(id, "jointedMatch").populate({ path: "jointedMatch", select: "-createdAt -updatedAt", populate: { path: "matchId", select: "-createdAt -updatedAt" } }).exec();
   }
 
-
+  // async getJointedMatche(idJointedMatch: string) {
+  //   return await this..findById(id, "jointedMatch").
+  // }
 
 }

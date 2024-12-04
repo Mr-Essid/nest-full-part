@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable, Param, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { MatchPlayer } from './entities/match-player.entity';
-import { Model } from 'mongoose';
+import { isValidObjectId, Model } from 'mongoose';
 import { Match } from 'src/match/entities/match.entity';
 import { UserModule } from 'src/user/user.module';
 import { User } from 'src/user/entities/user.entity';
@@ -17,15 +17,21 @@ export class MatchPlayerService {
 
   async joinMatch(param, userId: string, isAccepted: boolean = false) {
 
-    const isMatchExists = await this.matchModel.findById(param.matchId, "_id").exec();
+    if (!isValidObjectId(param.matchId)) {
+      throw new HttpException(
+        'Key of match not valid',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    const isMatchExists = await this.matchModel.findById(param.matchId, "_id playersOfMatch").exec();
 
     if (isMatchExists == null) {
       throw new HttpException(
         'Match Not exists',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.NOT_FOUND,
       );
     }
-
 
     const playerAlreadyJoined = await this.matchPLayerModel.findOne({
       matchId: param.matchId,
@@ -34,14 +40,16 @@ export class MatchPlayerService {
     if (playerAlreadyJoined) {
       throw new HttpException(
         'You have already joined this match',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.CONFLICT,
       );
     }
 
-    const numberOfMatchId = await this.matchPLayerModel.countDocuments()
 
-    if (numberOfMatchId == 10)
-      throw new HttpException("match full of plyers", HttpStatus.BAD_REQUEST)
+    const players = isMatchExists.playersOfMatch.length
+
+    if (players == 9)
+      throw new HttpException("match full of players", HttpStatus.BAD_REQUEST)
+
 
 
     const match = await this.matchPLayerModel.create({
@@ -76,6 +84,18 @@ export class MatchPlayerService {
     );
     return myMatchPlayer;
   }
+
+  async findJoinedMatchById(id: String) {
+    try {
+
+      return await this.matchPLayerModel.findById(id, "-createdAt -updatedAt")
+        .populate({ path: "matchId", select: "-createdAt -updatedAt" })
+        .exec();
+    } catch (e) {
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+
   async findAllMatchPlayer() {
     const matchPlayer = await this.matchPLayerModel
       .find({})

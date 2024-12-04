@@ -51,10 +51,10 @@ export class MatchPlayerController {
   }
 
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.matchPlayerService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.matchPlayerService.findJoinedMatchById(id);
+  }
 
   // @Patch(':id')
   // update(

@@ -24,8 +24,6 @@ export class MatchService {
     const requestedDatetimereserved = new Date(requestedDatetime);
     requestedDatetimereserved.setMinutes(requestedDatetimereserved.getMinutes() + 120); // Add 120 minutes
 
-    console.log('Requested Date:', requestedDatetime);
-    console.log('Reserved Match Time:', requestedDatetimereserved);
 
     const reservedMatch = await this.matchModel.find({
       terrainId: createMatchDto.terrainId,
@@ -56,7 +54,16 @@ export class MatchService {
     await this.userModel.findByIdAndUpdate(userId, { $push: { ownMatchs: matchCreated._id } })
 
     await this.terrainModel.findByIdAndUpdate(createMatchDto.terrainId, { $push: { matchsIn: matchCreated._id } })
-    return matchCreated;
+    return await matchCreated
+      .populate([{
+        path: 'playersOfMatch', populate: {
+          path: "userId",
+          select: "name last_name phone id"
+        }
+      },
+      { path: 'userId', select: 'email name last_name phone' },
+      { path: "terrainId" }
+      ]);
   }
 
   async findAllMatches() {
@@ -90,7 +97,6 @@ export class MatchService {
           { path: "terrainId", select: "-matchsIn -createdAt -updatedAt -__v" },
           { path: "playersOfMatch", select: "-createdAt -updatedAt -__v", populate: { "path": "userId", select: "name" } },
         ],
-
       ).exec();
   }
 
