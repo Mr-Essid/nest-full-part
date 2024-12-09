@@ -12,7 +12,7 @@ export class TokenService {
   constructor(
     private readonly jwtService: JwtService,
     @InjectModel(User.name) private userModel: Model<User>,
-  ) {}
+  ) { }
 
   async generateTokens(
     userId: string,
@@ -22,7 +22,7 @@ export class TokenService {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         { sub: userId, email, role },
-        { secret: process.env.AT_SECRET, expiresIn: '50m' },
+        { secret: process.env.AT_SECRET, expiresIn: '1h' },
       ),
       this.jwtService.signAsync(
         { sub: userId, email, role },

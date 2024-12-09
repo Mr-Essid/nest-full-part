@@ -9,6 +9,9 @@ import { MailerModule } from './mailer/mailer.module';
 import { MatchModule } from './match/match.module';
 import { MatchPlayerModule } from './match-player/match-player.module';
 import { TerrainModule } from './terrain/terrain.module';
+import { JwtService } from '@nestjs/jwt';
+import { EventsModule } from './events/events.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -20,12 +23,14 @@ import { TerrainModule } from './terrain/terrain.module';
     MatchModule,
     MatchPlayerModule,
     TerrainModule,
+    EventsModule,
+    MessageModule,
   ],
   providers: [
     {
       provide: APP_GUARD,
-      useClass: AtGuard,
-    },
-  ],
+      useClass: AtGuard
+    }
+  ]
 })
-export class AppModule {}
+export class AppModule { }

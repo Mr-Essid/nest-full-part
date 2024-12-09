@@ -143,7 +143,9 @@ export class AuthService {
   }
 
   async refresh(userId: string, rt: string): Promise<Tokens> {
+
     const user = await this.userModel.findOne({ _id: userId });
+
     if (!user || !user.hashRt) {
       throw new ForbiddenException('Access Denied');
     }

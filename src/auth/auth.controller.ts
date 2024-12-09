@@ -19,7 +19,7 @@ import { Tokens } from './types';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Public()
   @Post('signup')
@@ -70,6 +70,7 @@ export class AuthController {
     @GetCurrentUserId() userId: string,
     @GetCurrentUser('refreshToken') refreshToken: string,
   ): Promise<Tokens> {
+
     const tokens = await this.authService.refresh(userId, refreshToken);
 
     return {

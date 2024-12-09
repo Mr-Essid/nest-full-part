@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import path from 'path';
+import { log } from 'console';
 
 @Injectable()
 export class UserService {

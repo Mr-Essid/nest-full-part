@@ -2,6 +2,7 @@ import { Controller, Body, Param, Delete, Put, Get } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetCurrentUserId } from 'src/common/decorators';
+import { log } from 'console';
 
 @Controller('user')
 export class UserController {
@@ -23,7 +24,12 @@ export class UserController {
 
   @Get()
   getCurrentUser(@GetCurrentUserId() sub: string) {
-    return this.userService.currentUser(sub)
+    try {
+      console.log("method executed with", sub)
+      return this.userService.currentUser(sub)
+    } catch (e) {
+
+    }
   }
 
 
