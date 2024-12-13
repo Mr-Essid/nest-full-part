@@ -14,6 +14,9 @@ import { Tokens } from './types';
 import { MailerService } from 'src/mailer/mailer.service';
 import { TokenService } from './token.service';
 import { authenticator } from 'otplib';
+import { rejects } from 'assert';
+import { error } from 'console';
+import { resolve } from 'path';
 
 @Injectable()
 export class AuthService {
@@ -77,7 +80,6 @@ export class AuthService {
     if (!userExist) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-
     const passwordMatch = await argon2.verify(
       userExist.password,
       loginData.password,

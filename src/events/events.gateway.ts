@@ -9,7 +9,8 @@ import { UserService } from 'src/user/user.service';
 
 type WebSocketPayloadType = {
   content: String,
-  userName: String
+  userName: String,
+  userId: String
 }
 
 @WebSocketGateway()
@@ -18,6 +19,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server
   constructor(private messageService: MessageService, private matchService: MatchService, private userService: UserService, private jwtService: JwtService) { }
+
 
   async handleConnection(client: Socket, ...args: any[]) {
     // we gonna make all auth stuff right here!
@@ -39,22 +41,25 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       matchId: matchId
     };
 
+    console.log("Client Connected")
     client.join(matchId);
+    client.emit("walcome", "Hello You're Connected To Our Server")
 
   }
 
 
 
   handleDisconnect(client: Socket) {
+    console.log('client disconnected ' + client.data.name)
     client.data = undefined;
+
   }
 
 
   @SubscribeMessage('message')
   handleMessage(client: Socket, payload: any): string {
-    console.log(client.data.name);
     this.messageService.create(new CreateMessageDto({ senderName: client.data.name, sendId: client.data.userId, matchId: client.data.matchId, content: payload }))
-    this.server.to(client.data.matchId).emit('response', { senderName: client.data.name, content: payload });
+    this.server.to(client.data.matchId).emit('response', { userName: client.data.name, content: payload, userId: client.data.userId, datetime_: (new Date()).toISOString() });
     return "emitted";
   }
 

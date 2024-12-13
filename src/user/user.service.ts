@@ -21,13 +21,23 @@ export class UserService {
   async deleteProfile(id: string) {
     return await this.userModel.findByIdAndDelete(id);
   }
+
   async currentUser(id: string) {
     return await this.userModel.findById(id)
   }
 
   async getOwnMatchs(id: string) {
     return await this.userModel.findById(id, "ownMatchs")
-      .populate({ path: "ownMatchs", select: "-createdAt -updatedAt", populate: [{ path: "terrainId", select: "-matchsIn -managerId -createdAt -updatedAt" }, { path: "playersOfMatch", select: "isAccepted userId", populate: { path: "userId", select: "name phone email" } }] })
+      .populate({
+        path: "ownMatchs", select: "-createdAt -updatedAt",
+        populate: [
+          { path: "terrainId", select: "-matchsIn -managerId -createdAt -updatedAt" },
+          {
+            path: "playersOfMatch", select: "isAccepted userId", populate:
+              { path: "userId", select: "name phone email" }
+          }
+        ]
+      })
       .exec();
   }
 

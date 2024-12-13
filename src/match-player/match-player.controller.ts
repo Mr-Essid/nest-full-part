@@ -18,8 +18,10 @@ export class MatchPlayerController {
 
   @Post('/join/:matchId')
   joinMatch(@Param() param, @GetCurrentUserId() userId: string) {
-    console.log("match controller executed")
+
+
     return this.matchPlayerService.joinMatch(param, userId);
+
   }
 
   // @Get('/mine')

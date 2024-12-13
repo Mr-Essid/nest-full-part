@@ -18,8 +18,8 @@ export class MessageService {
     return await this.messageModel.create({
       userId: createMessageDto.senderId,
       matchId: createMessageDto.matchId,
-      conetnt: createMessageDto.content,
-      senderName: createMessageDto.senderName
+      content: createMessageDto.content,
+      userName: createMessageDto.senderName
     });
   }
 
@@ -32,7 +32,7 @@ export class MessageService {
   }
 
   async findMessagesOfMatch(matchId: String) {
-    return await this.messageModel.find({ matchId: matchId }).populate({ path: 'userId', select: 'name' });
+    return await this.messageModel.find({ matchId: matchId }, "userId content createdAt").populate({ path: 'userId', select: '_id name' });
 
   }
 

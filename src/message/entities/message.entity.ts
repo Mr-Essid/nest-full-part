@@ -11,7 +11,7 @@ export type MessageDocuement = HydratedDocument<Message>;
 export class Message {
 
     @Prop()
-    conetnt: String;
+    content: String;
 
     @Prop({ type: Types.ObjectId, ref: 'Match' })
     matchId: Match
@@ -20,7 +20,7 @@ export class Message {
     userId: User
 
     @Prop()
-    senderName: String
+    userName: String
 
 }
 
