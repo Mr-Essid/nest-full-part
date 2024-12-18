@@ -111,7 +111,6 @@ export class MatchPlayerService {
     userId: string, playerOfMatchId: string
   ) {
 
-
     // get playerMatchId with match => check if user ownId of match the current user =>  => accepte 
 
     const matchPlayer = await this.matchPLayerModel.findById(playerOfMatchId, "-createdAt -updatedAt").populate({ path: "matchId", select: "userId" })
@@ -156,6 +155,42 @@ export class MatchPlayerService {
   }
 
 
+
+  async cancelRequet(
+    userId: string, playerOfMatchId: string
+  ) {
+
+    // get playerMatchId with match => check if user ownId of match the current user =>  => check request not accpeted then delete 
+
+    const matchPlayer = await this.matchPLayerModel.findById(playerOfMatchId, "-createdAt -updatedAt");
+
+    if (matchPlayer == null) {
+      throw new HttpException("Request Not Found", HttpStatus.BAD_REQUEST)
+    }
+
+    if (matchPlayer.userId.toString() != userId) {
+      throw new HttpException("Unauthorized request, You're not the owner of the request to cancel it", HttpStatus.UNAUTHORIZED)
+    }
+
+    if (matchPlayer.isAccepted) {
+      throw new HttpException("Request already accpeted", HttpStatus.BAD_REQUEST)
+    }
+
+    // begin the proccess of deletion
+
+    await this.userModel.findByIdAndUpdate(userId, {
+      $pull: { jointedMatch: matchPlayer._id }
+    });
+
+
+
+    await this.matchModel.findByIdAndUpdate(matchPlayer.matchId, {
+      $pull: { playersOfMatch: matchPlayer._id }
+    });
+
+    return matchPlayer.deleteOne()
+
+  }
 
 
   // findOne(id: number) {

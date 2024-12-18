@@ -28,8 +28,10 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const token = client.handshake.headers.authorization?.split(" ").at(1);
     const matchId = client.handshake.query['roomId'] as string;
     console.log(token, matchId);
-    if (token == undefined || matchId == undefined)
+    if (token == undefined || matchId == undefined) {
       client.disconnect();
+      return;
+    }
 
     // throw exeption when the token not valid!
     const userId = this.jwtService.verify(token, { secret: process.env.AT_SECRET }) as JwtPayload
@@ -58,9 +60,11 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('message')
   handleMessage(client: Socket, payload: any): string {
+
     this.messageService.create(new CreateMessageDto({ senderName: client.data.name, sendId: client.data.userId, matchId: client.data.matchId, content: payload }))
     this.server.to(client.data.matchId).emit('response', { userName: client.data.name, content: payload, userId: client.data.userId, datetime_: (new Date()).toISOString() });
     return "emitted";
+
   }
 
 

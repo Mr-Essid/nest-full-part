@@ -19,7 +19,6 @@ export class MatchPlayerController {
   @Post('/join/:matchId')
   joinMatch(@Param() param, @GetCurrentUserId() userId: string) {
 
-
     return this.matchPlayerService.joinMatch(param, userId);
 
   }
@@ -52,6 +51,10 @@ export class MatchPlayerController {
     return this.matchPlayerService.refusePlayerOfMatch(userId, matchPlayerId);
   }
 
+  @Put("/cancel/:matchPlayerId")
+  cancelRequest(@Param("matchPlayerId") matchPlayerId: string, @GetCurrentUserId() userId: string) {
+    return this.matchPlayerService.cancelRequet(userId, matchPlayerId);
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
