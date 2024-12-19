@@ -21,7 +21,6 @@ async function bootstrap() {
       'Authorization',
     ],
   });
-
   await app.listen(process.env.PORT ?? 4000);
 }
 bootstrap();

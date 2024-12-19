@@ -12,6 +12,7 @@ import { TerrainModule } from './terrain/terrain.module';
 import { JwtService } from '@nestjs/jwt';
 import { EventsModule } from './events/events.module';
 import { MessageModule } from './message/message.module';
+import { GeminiModule } from './gemini/gemini.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { MessageModule } from './message/message.module';
     TerrainModule,
     EventsModule,
     MessageModule,
+    GeminiModule,
   ],
   providers: [
     {
