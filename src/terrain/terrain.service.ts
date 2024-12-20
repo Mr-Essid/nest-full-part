@@ -76,7 +76,7 @@ export class TerrainService {
   }
 
   async getMyTerrain(managerId: string) {
-    return await this.terrainModel.findOne({ managerId });
+    return await this.terrainModel.findOne({ managerId })
   }
 
 

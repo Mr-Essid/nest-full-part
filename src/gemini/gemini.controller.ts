@@ -9,9 +9,14 @@ export class GeminiController {
     constructor(@Inject() private readonly geminiService: GeminiService) { }
 
 
-    @Get('message')
+    @Post('message')
     sendMessage(@GetCurrentUserId() sub, @Body() messageDto: GeminiMessageDto) {
-        return this.geminiService.sendMessage(sub, messageDto.content);
+        try {
+            return this.geminiService.sendMessage(sub, messageDto.content);
+        } catch (e) {
+            console.log(e);
+            throw e;
+        }
     }
 
     @Delete('session')

@@ -28,30 +28,32 @@ export class GeminiService {
 
             if (!currentManger)
                 throw new HttpException('user not found', HttpStatus.NOT_FOUND);
+            try {
+                const terrainInfo = await this.terrainModel.findOne({ managerId: currentManger._id.toString() }).exec();
+                console.log(terrainInfo);
+            } catch (e) {
+                console.log(e);
+            }
 
-            const terrainInfo = await this.terrainModel.findOne({ managerId: currentManger._id.toString() }).populate(
-                [
-                    {
-                        select: '-createdAt -updatedAt -__v',
-                        path: 'matchsIn',
-                        populate: [
-                            {
-                                path: 'userId',
-                                select: 'name email'
-                            },
-                            {
-                                path: 'playersOfMatch',
-                                populate: {
-                                    path: 'userId',
-                                    select: 'name email'
-                                },
-                                select: '-createdAt -updatedAt -__v'
-                            }
-                        ]
-                    }
-                ]
-            ).exec();
 
+
+            const terrainInfo = await this.terrainModel.findOne({ managerId: currentManger._id.toString() })
+                .populate('matchsIn', '-createdAt -updatedAt -__v')
+                .populate({
+                    path: 'matchsIn',
+                    populate: [
+                        { path: 'userId', select: 'name email' },
+                        { path: 'playersOfMatch', populate: { path: 'userId', select: 'name email' } },
+                    ]
+                })
+                .exec();
+
+
+
+
+            console.log("user " + currentManger._id)
+            console.log("matches " + terrainInfo.matchsIn.length)
+            console.log("id of terrain " + terrainInfo._id)
 
             this.session.set(sessionId, {
                 history: [
@@ -80,7 +82,7 @@ export class GeminiService {
     async sendMessage(sessionId: String, content: String) {
         const sessionObject = await this.getSession(sessionId);
         const modelInstanceWithContext = this.modelInstance.startChat(sessionObject);
-        return (await modelInstanceWithContext.sendMessage(content.toString())).response.candidates;
+        return (await modelInstanceWithContext.sendMessage(content.toString())).response.candidates.at(0).content;
     }
 
 
